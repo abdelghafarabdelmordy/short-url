@@ -22,7 +22,9 @@ phases:
         fi
       - echo "Installing Docker..."
       - yum install -y docker
-      - service docker start
+      - echo "Starting Docker service using systemctl..."
+      - sudo systemctl start docker # Start Docker using systemctl
+      - sudo systemctl enable docker # Enable Docker to start on boot
       - echo "Installing kubectl..."
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
