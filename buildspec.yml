@@ -9,13 +9,12 @@ phases:
   install:
     commands:
       - echo "Installing dependencies..."
-      - yum install -y docker # Ensure Docker is available
+      - yum install -y docker
       - service docker start
       - echo "Installing kubectl..."
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
-
   pre_build:
     commands:
       - echo "Logging in to Docker registry..."
@@ -23,15 +22,13 @@ phases:
       - echo "Setting up kubeconfig for EKS..."
       - aws eks update-kubeconfig --region us-east-1 --name Dev-cluster
       - echo "Validating EKS cluster login..."
-      - kubectl config current-context # Verifies that the kubeconfig is set up correctly
-
+      - kubectl config current-context
   build:
     commands:
       - echo "Building Docker image..."
       - docker build -t "$DOCKER_REGISTRY_USERNAME/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION" .
       - echo "Pushing Docker image..."
       - docker push "$DOCKER_REGISTRY_USERNAME/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION"
-
   post_build:
     commands:
       - echo "Deploying application to EKS..."
@@ -40,7 +37,6 @@ phases:
       - kubectl rollout status deployment/shorturl --namespace=default
       - echo "Fetching service details..."
       - kubectl get svc --namespace=default
-
 artifacts:
   files:
     - '**/*'
