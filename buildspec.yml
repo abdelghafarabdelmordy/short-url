@@ -8,9 +8,10 @@ env:
 phases:
   install:
     commands:
-      - echo "Installing dependencies..."
+      - echo "Installing Docker..."
       - yum install -y docker
-      - service docker start
+      - echo "Starting Docker..."
+      - sudo systemctl start docker || nohup dockerd >/var/log/dockerd.log 2>&1 &
       - echo "Installing kubectl..."
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
