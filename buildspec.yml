@@ -19,10 +19,10 @@ phases:
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
-      - echo "Installing AWS CLI v2..."
+      - echo "Updating AWS CLI to the latest version..."
       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       - unzip awscliv2.zip
-      - sudo ./aws/install
+      - sudo ./aws/install --update
       - aws --version
   pre_build:
     commands:
