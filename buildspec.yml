@@ -10,18 +10,26 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - yum install -y docker
-      - sudo systemctl start docker
+      - echo "Starting Docker..."
+      - nohup dockerd >/var/log/dockerd.log 2>&1 &
+      - echo "Waiting for Docker to start..."
+      - sleep 10
+      - docker info
+      - echo "Installing kubectl..."
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
-      - echo "Updating AWS CLI..."
+      - echo "Installing AWS CLI v2..."
       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       - unzip awscliv2.zip
       - sudo ./aws/install
+      - aws --version
   pre_build:
     commands:
+      - echo "Logging in to Docker registry..."
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$DOCKER_REGISTRY_URL"
       - echo "Setting up kubeconfig for EKS..."
-      - aws eks update-kubeconfig --region us-east-1 --name Dev-cluster --role-arn arn:aws:iam::977098995238:role/codebuild-short-url-service-role
+      - aws eks update-kubeconfig --region us-east-1 --name Dev-cluster
       - echo "Validating Kubernetes context..."
       - kubectl config view
       - kubectl get nodes
