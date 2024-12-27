@@ -8,36 +8,34 @@ env:
 phases:
   install:
     commands:
-      - echo "Installing Docker..."
+      - echo "Installing dependencies..."
       - yum install -y docker
-      - echo "Starting Docker..."
-      - sudo systemctl start docker || nohup dockerd >/var/log/dockerd.log 2>&1 &
-      - echo "Installing kubectl..."
+      - sudo systemctl start docker
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
+      - echo "Updating AWS CLI..."
+      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      - unzip awscliv2.zip
+      - sudo ./aws/install
   pre_build:
     commands:
-      - echo "Logging in to Docker registry..."
-      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin "$DOCKER_REGISTRY_URL"
       - echo "Setting up kubeconfig for EKS..."
-      - aws eks update-kubeconfig --region us-east-1 --name Dev-cluster
-      - echo "Validating EKS cluster login..."
-      - kubectl config current-context
+      - aws eks update-kubeconfig --region us-east-1 --name Dev-cluster --role-arn arn:aws:iam::977098995238:role/codebuild-short-url-service-role
+      - echo "Validating Kubernetes context..."
+      - kubectl config view
+      - kubectl get nodes
   build:
     commands:
       - echo "Building Docker image..."
-      - docker build -t "$DOCKER_REGISTRY_USERNAME/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION" .
+      - docker build -t "$DOCKER_REGISTRY_URL/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION" .
       - echo "Pushing Docker image..."
-      - docker push "$DOCKER_REGISTRY_USERNAME/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION"
+      - docker push "$DOCKER_REGISTRY_URL/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION"
   post_build:
     commands:
       - echo "Deploying application to EKS..."
-      - kubectl set image deployment/shorturl shortenurlapp="$DOCKER_REGISTRY_USERNAME/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION" --namespace=default
-      - echo "Verifying deployment rollout..."
+      - kubectl set image deployment/shorturl shortenurlapp="$DOCKER_REGISTRY_URL/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION" --namespace=default
       - kubectl rollout status deployment/shorturl --namespace=default
-      - echo "Fetching service details..."
-      - kubectl get svc --namespace=default
 artifacts:
   files:
     - '**/*'
