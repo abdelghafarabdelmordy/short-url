@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: shortenurlapp
-        image: abdo3001/short_url:657f05d025263759b0d66429c54e49dd3e0721c2
+        image: abdo3001/short_url:770d83b1e0f04255096938cd694c97947384e5ff
         resources:
           limits:
             memory: "128Mi"
