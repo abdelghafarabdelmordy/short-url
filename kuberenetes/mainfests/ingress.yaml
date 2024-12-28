@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: alb 
   rules:
-    - host: shorturl.cloudlyy.com
+    - host: secure.cloudlyy.com
       http:
         paths:
         - path: /
