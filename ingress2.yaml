@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: alb 
   rules:
-    - host: service-a.cloudlyy.com
+    - host: secure.cloudlyy.com
       http:
         paths:
         - path: /
@@ -19,4 +19,4 @@ spec:
             service:
               name: argocd-server 
               port:
-                number: 8080
+                number: 443
