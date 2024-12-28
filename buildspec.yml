@@ -82,6 +82,6 @@ phases:
   post_build:
     commands:
       - echo "Docker Image is Pushed"
-      - echo "Deploying the application to EKS"
-      - kubectl set image deployment/shorturl shortenurlapp=$DOCKER_USERNAME/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - kubectl get svc
+      - echo "You can Deploying the application to EKS now using ArgoCD"
+      # - kubectl set image deployment/shorturl shortenurlapp=$DOCKER_USERNAME/short_url:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      # - kubectl get svc
