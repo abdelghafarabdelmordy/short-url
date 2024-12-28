@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: shorturl
+  name: argocd-server
   annotations:
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:977098995238:certificate/ca42a38b-2365-429a-96dd-a2a71366ee51
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
@@ -10,13 +10,13 @@ metadata:
 spec:
   ingressClassName: alb 
   rules:
-    - host: shorturl.cloudlyy.com
+    - host: argocd.cloudlyy.com
       http:
         paths:
         - path: /
           pathType: Prefix
           backend:
             service:
-              name: shorturl 
+              name: argocd-server 
               port:
-                number: 8080
+                number: 80
